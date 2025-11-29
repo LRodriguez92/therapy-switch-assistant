@@ -15,9 +15,15 @@ The algorithm calculates a match score for each therapist based on how well they
 | Specialty Match | +2 | If user's preferred specialty is in therapist's specialties |
 | Modality Match | +1 | If user's preferred modality is in therapist's modalities |
 | Availability Match | +1 | If user's preferred time overlaps with therapist's availability |
-| Gender Match | +1 | If therapist's gender matches user's preference |
+| Gender Match | +1 | If therapist's gender exactly matches user's preference (exact string match) |
+| LGBTQIA+ Affirming Match | +1 | If user prefers LGBTQIA+-affirming therapists and therapist is LGBTQIA+-affirming |
 
-**Maximum Score:** 5 points
+**Maximum Score:** 6 points
+
+**Gender Matching Notes:**
+- Uses exact string matching (e.g., "Female" matches "Female", "Non-binary" matches "Non-binary")
+- If user selects "Prefer not to say" or "No preference", gender matching is skipped (no penalty)
+- Custom gender entries (e.g., "Other: [text]") must match exactly
 
 ## Algorithm Pseudocode
 
@@ -59,8 +65,16 @@ function getMatches(userId):
           break // Only count once
     
     // Check gender match (+1 point)
-    if preferences.gender exists and preferences.gender === therapist.gender:
-      score += 1
+    if preferences.gender exists:
+      if preferences.gender === "Prefer not to say" or preferences.gender === "No preference":
+        // Skip gender matching - no penalty
+      else if preferences.gender === therapist.gender:
+        score += 1
+    
+    // Check LGBTQIA+ affirming match (+1 point)
+    if preferences.lgbtqia_affirming exists and preferences.lgbtqia_affirming === true:
+      if therapist.lgbtqia_affirming === true:
+        score += 1
     
     matches.append({
       therapist: therapist,
@@ -105,8 +119,23 @@ function calculateMatchScore(therapist, userPreferences) {
   }
   
   // Gender match (+1)
-  if (userPreferences.gender && 
-      userPreferences.gender === therapist.gender) {
+  if (userPreferences?.gender) {
+    const userGender = userPreferences.gender;
+    const therapistGender = therapist.gender;
+    
+    // Skip matching if user prefers not to say
+    if (userGender === 'Prefer not to say' || userGender === 'No preference') {
+      // Don't penalize for gender preference
+    }
+    // Exact match - works for all gender options
+    else if (userGender === therapistGender) {
+      score += 1;
+    }
+  }
+
+  // LGBTQIA+ affirming match (+1)
+  // This is a separate preference/qualifier, not a gender
+  if (userPreferences?.lgbtqia_affirming && therapist.lgbtqia_affirming) {
     score += 1;
   }
   
@@ -149,7 +178,8 @@ function getTopMatches(userId) {
   "specialty": ["Anxiety"],
   "modality": ["CBT"],
   "time": ["Evenings"],
-  "gender": "Female"
+  "gender": "Female",
+  "lgbtqia_affirming": true
 }
 ```
 
@@ -158,25 +188,29 @@ function getTopMatches(userId) {
 - Modalities: `["CBT", "EMDR"]`
 - Availability: `["Evenings", "Weekends"]`
 - Gender: `"Female"`
+- LGBTQIA+ Affirming: `true`
 
 **Score Calculation:**
 - Specialty match: ✅ "Anxiety" found → +2
 - Modality match: ✅ "CBT" found → +1
 - Availability match: ✅ "Evenings" found → +1
 - Gender match: ✅ "Female" matches → +1
-- **Total Score: 5**
+- LGBTQIA+ affirming match: ✅ Both true → +1
+- **Total Score: 6**
 
 **Therapist B:**
 - Specialties: `["Depression", "Trauma"]`
 - Modalities: `["DBT"]`
 - Availability: `["Mornings"]`
 - Gender: `"Male"`
+- LGBTQIA+ Affirming: `false`
 
 **Score Calculation:**
 - Specialty match: ❌ "Anxiety" not found → +0
 - Modality match: ❌ "CBT" not found → +0
 - Availability match: ❌ "Evenings" not found → +0
 - Gender match: ❌ "Male" doesn't match → +0
+- LGBTQIA+ affirming match: ❌ User wants affirming, therapist is not → +0
 - **Total Score: 0**
 
 ## Edge Cases
@@ -216,9 +250,10 @@ The current algorithm is simple and effective, but can be extended with:
 
 Test cases to consider:
 
-1. **Perfect Match**: All preferences match → Score = 5
-2. **Partial Match**: Some preferences match → Score = 1-4
+1. **Perfect Match**: All preferences match → Score = 6
+2. **Partial Match**: Some preferences match → Score = 1-5
 3. **No Match**: No preferences match → Score = 0
+4. **Gender Preference Not Set**: User selects "Prefer not to say" → Gender matching skipped, max score = 5
 4. **Missing Preferences**: User has no preferences → Sort by rating
 5. **Current Therapist Exclusion**: Current therapist not in results
 6. **Empty Database**: Handle gracefully when no therapists available

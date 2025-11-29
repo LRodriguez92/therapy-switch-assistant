@@ -29,8 +29,23 @@ export function calculateMatchScore(therapist, userPreferences) {
   }
   
   // Gender match (+1)
-  if (userPreferences?.gender && 
-      userPreferences.gender === therapist.gender) {
+  if (userPreferences?.gender) {
+    const userGender = userPreferences.gender;
+    const therapistGender = therapist.gender;
+    
+    // Skip matching if user prefers not to say
+    if (userGender === 'Prefer not to say' || userGender === 'No preference') {
+      // Don't penalize for gender preference
+    }
+    // Exact match - works for all gender options
+    else if (userGender === therapistGender) {
+      score += 1;
+    }
+  }
+
+  // LGBTQIA+ affirming match (+1)
+  // This is a separate preference/qualifier, not a gender
+  if (userPreferences?.lgbtqia_affirming && therapist.lgbtqia_affirming) {
     score += 1;
   }
   

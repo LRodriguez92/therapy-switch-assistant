@@ -78,9 +78,10 @@ GET /api/matches?userId=1
       "modalities": ["CBT", "EMDR"],
       "availability": ["Evenings", "Weekends"],
       "gender": "Female",
+      "lgbtqia_affirming": false,
       "image_url": "https://example.com/therapist3.jpg",
       "rating": 4.8,
-      "match_score": 5
+      "match_score": 6
     },
     {
       "id": 5,
@@ -89,9 +90,10 @@ GET /api/matches?userId=1
       "modalities": ["CBT"],
       "availability": ["Evenings"],
       "gender": "Female",
+      "lgbtqia_affirming": true,
       "image_url": "https://example.com/therapist5.jpg",
       "rating": 4.6,
-      "match_score": 4
+      "match_score": 5
     },
     {
       "id": 7,
@@ -100,6 +102,7 @@ GET /api/matches?userId=1
       "modalities": ["DBT"],
       "availability": ["Weekends"],
       "gender": "Female",
+      "lgbtqia_affirming": false,
       "image_url": "https://example.com/therapist7.jpg",
       "rating": 4.5,
       "match_score": 3
@@ -115,10 +118,11 @@ GET /api/matches?userId=1
   - `specialties` (array) - List of specialties
   - `modalities` (array) - List of therapy modalities
   - `availability` (array) - List of availability options
-  - `gender` (string, optional) - Therapist's gender
+  - `gender` (string, optional) - Therapist's gender (see gender options in DATABASE.md)
+  - `lgbtqia_affirming` (boolean, optional) - Whether therapist is LGBTQIA+-affirming
   - `image_url` (string, optional) - Profile image URL
   - `rating` (float) - Therapist's rating
-  - `match_score` (integer) - Calculated match score (for debugging/display)
+  - `match_score` (integer) - Calculated match score (for debugging/display, max: 6)
 
 **Status Codes:**
 - `200 OK` - Matches returned successfully

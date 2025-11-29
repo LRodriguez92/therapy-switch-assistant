@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS therapists (
   name VARCHAR(255) NOT NULL,
   specialties JSONB,
   modalities JSONB,
-  gender VARCHAR(50),
+  gender VARCHAR(255),  -- Increased from 50 to 255 to accommodate "Other: [custom text]"
+  lgbtqia_affirming BOOLEAN DEFAULT false,  -- New column for LGBTQIA+ affirming flag
   availability JSONB,
   image_url VARCHAR(500),
   rating FLOAT

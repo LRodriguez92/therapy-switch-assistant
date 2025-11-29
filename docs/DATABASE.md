@@ -23,9 +23,23 @@ Stores user accounts and their current therapist assignments.
   "specialty": ["Anxiety", "Depression"],
   "modality": ["CBT", "EMDR"],
   "gender": "Female",
+  "lgbtqia_affirming": true,
   "time": ["Evenings", "Weekends"]
 }
 ```
+
+**Gender Options:**
+- `"Male"`
+- `"Female"`
+- `"Non-binary"` or `"Gender-neutral"`
+- `"Transfeminine"`
+- `"Transmasculine"`
+- `"Trans / Transgender"`
+- `"Prefer not to say"` or `"No preference"`
+- `"Other: [custom text]"` - User-defined gender identity
+
+**LGBTQIA+ Affirming:**
+- `lgbtqia_affirming` (boolean, optional) - User preference for LGBTQIA+-affirming therapists
 
 ### `therapists`
 
@@ -37,7 +51,8 @@ Stores therapist profiles, specialties, and availability.
 | `name` | `varchar` | Therapist's full name |
 | `specialties` | `json` | Array of specialties (e.g., `["Anxiety", "Trauma"]`) |
 | `modalities` | `json` | Array of therapy modalities (e.g., `["CBT", "EMDR"]`) |
-| `gender` | `varchar` | Optional gender field |
+| `gender` | `varchar(255)` | Optional gender field (supports custom entries like "Other: [text]") |
+| `lgbtqia_affirming` | `boolean` | Whether therapist is LGBTQIA+-affirming (default: false) |
 | `availability` | `json` | Array of availability options (e.g., `["Evenings", "Weekends"]`) |
 | `image_url` | `varchar` | Optional profile image URL |
 | `rating` | `float` | For demo sorting purposes |
