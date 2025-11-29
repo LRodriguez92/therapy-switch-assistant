@@ -1,5 +1,3 @@
-import { useState } from 'react';
-
 /**
  * Therapist Card Component
  * Displays therapist information in a card format
@@ -23,10 +21,8 @@ export default function TherapistCard({
   onSwitch,
   isSwitching = false 
 }) {
-  const [showFullBio, setShowFullBio] = useState(false);
   
   const {
-    id,
     name,
     specialties = [],
     modalities = [],
