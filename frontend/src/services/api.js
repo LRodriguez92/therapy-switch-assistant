@@ -1,8 +1,3 @@
-/**
- * API Client for Therapy Switch Assistant
- * Handles all HTTP requests to the backend API
- */
-
 const API_BASE_URL = '/api';
 
 /**
